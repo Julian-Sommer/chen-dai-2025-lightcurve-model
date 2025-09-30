@@ -1,6 +1,6 @@
 # Chen & Dai 2025 Lightcurve Model
 
-A Python package for modeling jet-head shock breakout emission from embedded black holes in supermassive black hole accretion disks, following the Chen & Dai (2025) model.
+A Python package for modeling jet-head shock breakout emission from embedded black holes in supermassive black hole accretion disks, following the Chen & Dai (2025) model ([ApJ, 987, 214](https://iopscience.iop.org/article/10.3847/1538-4357/addb48)).
 
 ## Overview
 
