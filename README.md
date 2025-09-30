@@ -1,4 +1,4 @@
-# Chen & Dai 2025 Jet Model
+# Chen & Dai 2025 Lightcurve Model
 
 A Python package for modeling jet-head shock breakout emission from embedded black holes in supermassive black hole accretion disks, following the Chen & Dai (2025) model.
 
@@ -15,8 +15,8 @@ This package simulates the emission signatures of massive stellar mass black hol
 
 ```bash
 # Clone the repository
-git clone https://github.com/Juli-Sommer/chen-dai-2025-jet-model.git
-cd chen-dai-2025-jet-model
+git clone https://github.com/Juli-Sommer/chen-dai-2025-lightcurve-model.git
+cd chen-dai-2025-lightcurve-model
 
 # Install dependencies (requires Python 3.8+)
 pip install numpy scipy matplotlib astropy
@@ -59,30 +59,63 @@ python bbh_counterpart_cli.py generate-multiband-lc \
 - `multiband_ab_magnitudes_linear_days.png` - AB magnitudes (linear time scale)
 - `multiband_lc_t{time_bins}_b{bands}.csv` - Numerical results (filtered, non-zero only)
 
-### 2. Optical Depth Analysis (`optical-depth`)
+### 2. Best Lightcurve Selection (`find-best-lc`)
 
-Study breakout conditions across different density profiles:
+Automate parameter grid searches and identify the best lightcurve (the parameter combination with the strongest transient–AGN contrast) for your chosen bands.
 
+**How It Works:**
+- Runs a grid of models over `vkick` and `radial_distance` (either as single values or ranges).
+- For each parameter combination, generates multiband lightcurves and saves results to CSV and plots.
+- After the grid search, analyzes only the CSVs generated in the current run.
+- For the bluest band (shortest wavelength in your selection), computes the difference between the combined (transient+AGN) and AGN-only magnitude at each time step.
+- Finds the minimum (brightest) difference for each combination and reports the top 3 parameter sets with the strongest transient–AGN contrast.
+- Prints the CSV and plot file paths for the best results.
+
+**Example Usage:**
+
+*Grid Search with Ranges (limits):*
 ```bash
-python bbh_counterpart_cli.py optical-depth \
-    --bh_mass 100 \
+python find_best_lc.py \
+    --bh_mass 150 \
+    --vkick_range 50 200 \
+    --radial_distance_range 500 2000 \
+    --luminosity_distance 300 \
+    --smbh_mass 1e8 \
+    --bands g r i z J H K
+```
+This will sweep `vkick` from 50 to 200 and `radial_distance` from 500 to 2000 (default: 5 steps each).
+
+*Single Value Search (only one of `vkick` or `radial_distance` should be a single value; the other must be a range):*
+```bash
+# Example: vkick is a single value, radial_distance is a range
+python find_best_lc.py \
+    --bh_mass 150 \
     --vkick 100 \
+    --radial_distance_range 500 2000 \
+    --luminosity_distance 300 \
+    --smbh_mass 1e8 \
+    --bands g r i
+```
+
+# Example: radial_distance is a single value, vkick is a range
+python find_best_lc.py \
+    --bh_mass 150 \
+    --vkick_range 50 200 \
     --radial_distance 1000 \
-    --density_profile all \     # or 'gaussian', 'exponential', 'power_law'
-    --t_max 1e4
+    --luminosity_distance 300 \
+    --smbh_mass 1e8 \
+    --bands g r i
 ```
 
-### Fixing Jet Luminosity
+> **Note:** A single value search only makes sense if *either* `vkick` *or* `radial_distance` is a single value, not both. If both are single values, only one model will be run and the grid search logic is not used.
+This will run a single model for the specified parameters.
 
-For specific analysis needs, you can override the Bondi-calculated jet luminosity:
 
-```bash
-python bbh_counterpart_cli.py generate-multiband-lc \
-    --bh_mass 150 --vkick 100 --radial_distance 1000 \
-    --override_lj 1e46         # Override L_j [erg/s]
-```
-
-**Note:** This bypasses the default physics calculation and uses the specified luminosity value.
+**Output:**
+- Prints the top 3 parameter combinations with the strongest transient–AGN contrast in the bluest band.
+- For each, prints the CSV file path and associated plot paths.
+- All output files are organized in parameter-specific subdirectories under `data/multiband_lc/` and `plots/`.
+- A log file `find_best_lc.log` is generated, containing verbose output from each simulation. If you want to check detailed progress or debug issues, refer to this log file.
 
 ## Data Storage Structure
 

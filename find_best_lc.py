@@ -13,6 +13,7 @@ import numpy as np
 import os
 from pathlib import Path
 from tqdm import tqdm
+import pandas as pd
 import sys
 import warnings
 
@@ -36,6 +37,21 @@ from plotting import (
     plot_multiband_ab_magnitudes_with_agn,
 )
 from utils import generate_parameter_subdir, create_plots_subdir
+
+
+# --- Bluest band identification utility ---
+def get_bluest_band(bands):
+    """
+    Given a list of bands, return the band with the smallest central wavelength.
+    """
+    from photometry import wavelength_from_band
+
+    band_wavelengths = {b: wavelength_from_band(b) for b in bands}
+    bluest_band = min(band_wavelengths, key=band_wavelengths.get)
+    print(
+        f"Bluest band: {bluest_band} (wavelength: {band_wavelengths[bluest_band]} Angstrom)"
+    )
+    return bluest_band
 
 
 class MultibandAnalysisResults:
@@ -80,6 +96,12 @@ def run_find_best_lc(
 
     If vkick or radial_distance are not provided as arrays, generate them from the specified range and n_elements.
     """
+    # Identify the bluest band for later analysis
+    if bands is not None:
+        bluest_band = get_bluest_band(bands)
+    else:
+        raise ValueError("bands argument must be provided and non-empty.")
+
     # Check that smbh_mass and luminosity_distance are single values
     if isinstance(smbh_mass, (list, np.ndarray)) and len(np.atleast_1d(smbh_mass)) > 1:
         raise ValueError("smbh_mass must be a single value, not an array or range.")
@@ -167,3 +189,65 @@ def run_find_best_lc(
             sys.stdout = original_stdout
 
     print(f"All verbose output during grid search was saved to {log_path}")
+
+    # Only analyze CSVs generated in this run
+    csv_files = [
+        entry["result"].output_paths["csv"]
+        for entry in results_grid
+        if entry["result"].output_paths.get("csv")
+    ]
+    print(f"Found {len(csv_files)} CSV files from current run.")
+
+    # --- Analyze CSVs for best lightcurve selection ---
+    best_lc_results = []
+    for csv_path in csv_files:
+        try:
+            # Read only the header first to find relevant columns
+            with open(csv_path, "r") as f:
+                for line in f:
+                    if not line.startswith("#"):
+                        header = line.strip().split(",")
+                        break
+            col_total = f"ab_mag_total_agn_{bluest_band}"
+            col_agn = f"ab_mag_agn_{bluest_band}"
+            if col_total not in header or col_agn not in header:
+                print(f"Skipping {csv_path}: missing columns for {bluest_band}")
+                continue
+            usecols = [col_total, col_agn]
+            df = pd.read_csv(csv_path, comment="#", usecols=usecols)
+            diff_mag = df[col_total] - df[col_agn]
+            min_diff = diff_mag.min()
+            best_lc_results.append({"csv": csv_path, "min_diff_mag": min_diff})
+        except Exception as e:
+            print(f"Error processing {csv_path}: {e}")
+
+    print(
+        f"Analyzed {len(best_lc_results)} CSVs for best {bluest_band}-band lightcurve."
+    )
+
+    # --- Sort and print the top 3 best lightcurves ---
+    if best_lc_results:
+        best_lc_results.sort(key=lambda x: x["min_diff_mag"])
+        print(
+            f"\nTop 3 parameter combinations with strongest transient–AGN contrast in {bluest_band}-band:"
+        )
+        for i, top_entry in enumerate(best_lc_results[:3], 1):
+            print(
+                f"{i}. min_diff_mag = {top_entry['min_diff_mag']:.3f} | CSV: {top_entry['csv']}"
+            )
+            # Also print plot paths if available
+            result_obj = next(
+                (
+                    r["result"]
+                    for r in results_grid
+                    if r["result"].output_paths.get("csv") == top_entry["csv"]
+                ),
+                None,
+            )
+            if result_obj and "plots" in result_obj.output_paths:
+                for plot_path in result_obj.output_paths["plots"]:
+                    print(f"      Plot: {plot_path}")
+            elif not result_obj:
+                print("      [Warning] No result object found for this CSV.")
+    else:
+        print("No valid lightcurve results found for analysis.")

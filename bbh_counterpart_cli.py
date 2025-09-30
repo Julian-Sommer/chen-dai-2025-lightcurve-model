@@ -33,10 +33,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 # Import required modules for consistent Bondi-based analysis
-from evolution import ChenDaiModel, find_shock_breakout_time
-from constants import ModelParameters, ETA_JET_DEFAULT
-from physics.black_hole_physics import EmbeddedBHParameters, compute_jet_luminosity
-from evolution import ChenDaiModel, find_shock_breakout_time
 from constants import ModelParameters, ETA_JET_DEFAULT
 from physics.black_hole_physics import EmbeddedBHParameters, compute_jet_luminosity
 from disk_model import create_disk_model

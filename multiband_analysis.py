@@ -615,7 +615,7 @@ def run_multiband_analysis(
         if save_data:
             # Generate unique filename based on parameters
             bands_str = "_".join(bands)
-            csv_filename = f"multiband_lc_t{time_bins}_b{bands_str}.csv"
+            csv_filename = f"multiband_lc_{bands_str}.csv"
             out_file = os.path.join(data_dir, csv_filename)
 
             # Prepare data for CSV output
@@ -671,16 +671,19 @@ def run_multiband_analysis(
 
             # Save CSV data with simple citation header
             header = ",".join(header_cols)
-            citation_header = (
-                "# Based on: Chen & Dai (2025), ApJ, 987, 214\n" "# " + header
-            )
+            citation_header = "# Based on: Chen & Dai (2025), ApJ, 987, 214"
             np.savetxt(
                 out_file,
                 filtered_data,
                 delimiter=",",
-                header=citation_header,
-                comments="",
+                header=header,
+                comments="",  # This ensures the header line is not commented
             )
+            # Optionally, prepend the citation line manually if you want
+            with open(out_file, "r+") as f:
+                content = f.read()
+                f.seek(0, 0)
+                f.write(citation_header.rstrip("\r\n") + "\n" + content)
             if verbose:
                 print(f"Saved data: {out_file}")
 
