@@ -16,30 +16,9 @@ from tqdm import tqdm
 import pandas as pd
 import sys
 import warnings
-
-from evolution import ChenDaiModel, find_shock_breakout_time
 from multiband_analysis import run_multiband_analysis
-from constants import (
-    ModelParameters,
-    DiskConfiguration,
-    ETA_JET_DEFAULT,
-    C_CGS,
-    jy_to_cgs,
-)
-from disk_model import create_disk_model
-from physics import PhysicsCalculator, DiskPhysics
-from physics.black_hole_physics import EmbeddedBHParameters, compute_jet_luminosity
-from sed import BlackbodySED, ANGSTROM_TO_CM
-from photometry import wavelength_from_band
-from plotting import (
-    plot_multiband_ab_magnitudes,
-    plot_multiband_ab_magnitudes_linear_days,
-    plot_multiband_ab_magnitudes_with_agn,
-)
-from utils import generate_parameter_subdir, create_plots_subdir
 
 
-# --- Bluest band identification utility ---
 def get_bluest_band(bands):
     """
     Given a list of bands, return the band with the smallest central wavelength.
@@ -64,9 +43,6 @@ class MultibandAnalysisResults:
         self.breakout_data = {}
         self.model_info = {}
         self.output_paths = {}
-
-
-import argparse
 
 
 def run_find_best_lc(
@@ -142,10 +118,10 @@ def run_find_best_lc(
         print(f"vkick array: {vkick_arr}")
         print(f"radial_distance array: {radial_arr}")
 
-    # 1. Suppress RuntimeWarnings globally
+    # Suppress RuntimeWarnings globally
     warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-    # 2. Save log file in the main package directory (not output_dir)
+    # Save log file in the main package directory (not output_dir)
     main_dir = os.path.dirname(os.path.abspath(__file__))
     log_path = os.path.join(main_dir, "find_best_lc.log")
 

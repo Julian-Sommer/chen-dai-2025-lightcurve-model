@@ -19,7 +19,7 @@ git clone https://github.com/Juli-Sommer/chen-dai-2025-lightcurve-model.git
 cd chen-dai-2025-lightcurve-model
 
 # Install dependencies (requires Python 3.8+)
-pip install numpy scipy matplotlib astropy
+pip install pagn numpy scipy matplotlib astropy
 ```
 
 ## Core Commands
@@ -68,13 +68,17 @@ python find_best_lc.py \
     --radial_distance_range 500 2000 \
     --luminosity_distance 300 \
     --smbh_mass 1e8 \
-    --bands g r i z J H K
+    --bands g r i z J H K \
+    --n_elements 7 \
+    --t_max 1e7 \
+    --time_bins 5000
 ```
-This will sweep `vkick` from 50 to 200 and `radial_distance` from 500 to 2000 (default: 5 steps each).
+This will sweep `vkick` from 50 to 200 and `radial_distance` from 500 to 2000, using 7 steps for each parameter (default: 5 if not specified).
 
 *Single Value Search (only one of `vkick` or `radial_distance` should be a single value; the other must be a range):*
 
 ```bash
+
 # Example: vkick is a single value, radial_distance is a range
 python find_best_lc.py \
     --bh_mass 150 \
@@ -82,10 +86,11 @@ python find_best_lc.py \
     --radial_distance_range 500 2000 \
     --luminosity_distance 300 \
     --smbh_mass 1e8 \
-    --bands g r i
-```
+    --bands g r i \
+    --n_elements 7 \
+    --t_max 1e7 \
+    --time_bins 5000
 
-```bash
 # Example: radial_distance is a single value, vkick is a range
 python find_best_lc.py \
     --bh_mass 150 \
@@ -93,8 +98,15 @@ python find_best_lc.py \
     --radial_distance 1000 \
     --luminosity_distance 300 \
     --smbh_mass 1e8 \
-    --bands g r i
+    --bands g r i \
+    --n_elements 7 \
+    --t_max 1e7 \
+    --time_bins 5000
 ```
+## Physical Parameter Insights
+
+- **vkick:** The lowest `vkick` value always returns the strongest signature in the lightcurve, because the jet luminosity $L_j$ directly scales with the Bondi accretion rate, which increases as `vkick` decreases.
+- **SMBH mass:** The smaller the SMBH mass, the stronger the transient–AGN contrast. However, this also results in a lower overall magnitude in redder bands and causes shorter transient emission durations.
 
 > **Note:** A single value search only makes sense if *either* `vkick` *or* `radial_distance` is a single value, not both. If both are single values, only one model will be run and the grid search logic is not used.
 This will run a single model for the specified parameters.

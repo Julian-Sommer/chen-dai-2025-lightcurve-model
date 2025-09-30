@@ -20,6 +20,11 @@ Examples:
     python bbh_counterpart_cli.py generate-multiband-lc --bh_mass 150 --vkick 100 --radial_distance 1000 \
                     --luminosity_distance 300 --bands g r i J --t_max 1e6 \
                     --smbh_mass 1e8 --time_bins 5000 --use-pagn-default
+    
+    # Find best lightcurve
+    python bbh_counterpart_cli.py find-best-lc --bh_mass 250 --smbh_mass 1e7 --t_max 1e7 \
+                    --bands g r i z J H K --time_bins 5000 --luminosity_distance 100 --vkick 100 \
+                    --radial_distance_range 5e2 5e4 --n_elements 20
 
 Based on: Chen & Dai (2025), ApJ, 987, 214
 """
@@ -98,12 +103,10 @@ def calculate_jet_luminosity_bondi(args):
 
     # Check for research override
     if hasattr(args, "override_lj") and args.override_lj is not None:
-        print(f"\n⚠️  RESEARCH OVERRIDE ACTIVE ⚠️")
         print(f"Bondi-calculated L_j: {l_j:.2e} erg/s")
         print(f"Override L_j:         {args.override_lj:.2e} erg/s")
         print(f"Override factor:      {args.override_lj/l_j:.2f}x")
         l_j = args.override_lj
-        print(f"Using override luminosity for research purposes")
     else:
         print(f"\nBondi-derived jet luminosity: {l_j:.2e} erg/s")
         print(f"Bondi accretion rate: {bondi_data['mdot_bondi']:.2e} g/s")

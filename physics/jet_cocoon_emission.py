@@ -77,16 +77,7 @@ class JetCocoonEmission:
         return np.sqrt(kappa * f_beta_gamma * e_cj / (2 * np.pi * beta_cj * C_CGS**2))
 
     @staticmethod
-    def diffustion_time(kappa: float, e_cj: float, beta_cj: float) -> float:
-        return np.sqrt(
-            kappa * f_beta_gamma * e_cj / (2 * np.pi * beta_cj**3 * C_CGS**4)
-        )
-
-    @staticmethod
     def diffusion_time(kappa: float, e_cj: float, beta_cj: float) -> float:
-        """
-        Correctly spelled alias of diffustion_time (kept for backward compatibility).
-        """
         return np.sqrt(
             kappa * f_beta_gamma * e_cj / (2 * np.pi * beta_cj**3 * C_CGS**4)
         )

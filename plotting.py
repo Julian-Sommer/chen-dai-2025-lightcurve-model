@@ -3,11 +3,6 @@ Visualization and plotting utilities for the Chen & Dai model.
 
 This module provides comprehensive plotting capabilities for analyzing
 and presenting jet evolution results.
-
-Based on:
-    Chen, K., & Dai, Z.-G. (2025). Observational Properties of Thermal Emission
-    from Relativistic Jets Embedded in Active Galactic Nucleus Disks.
-    The Astrophysical Journal, 987(2), 214. https://doi.org/10.3847/1538-4357/addb48
 """
 
 import os
@@ -401,7 +396,7 @@ def plot_multiband_ab_magnitudes_with_agn(
 def plot_profile_comparison(
     results_dict,
     save_path,
-    title="Chen \& Dai 2025: Density Profile Comparison",
+    title="Chen and Dai 2025: Density Profile Comparison",
     figsize=(12, 10),
     dpi=300,
 ):

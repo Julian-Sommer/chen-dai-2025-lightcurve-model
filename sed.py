@@ -1,13 +1,6 @@
 """
 Spectral Energy Distribution (SED) calculations for the Chen & Dai 2025 model.
 
-This module implements the simplified blackbody SED approach described by the authors:
-"In order to estimate the SED, we adopt a simplified approach by assuming blackbody
-radiation with a bolometric luminosity equal to the disk cocoon luminosities. Then,
-by considering the ratio of the spectral energy density νB_ν(T) to the total
-spectral energy density B_(T), we are able to determine the luminosity at any
-given frequency."
-
 The module provides functions to:
 1. Calculate blackbody spectral energy density νB_ν(T)
 2. Calculate total blackbody spectral energy density B(T)
