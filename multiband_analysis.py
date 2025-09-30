@@ -542,6 +542,7 @@ def run_multiband_analysis(
         distance_cm,
         luminosity_distance,
     )
+    print(f"")
 
     # Add AGN disk AB magnitudes to band_results (non-destructive, after agn_magnitudes call)
     for band in lums_from_function:
@@ -588,7 +589,7 @@ def run_multiband_analysis(
 
     # Print photometry summary
     if verbose:
-        print(f"Photometry results:")
+        print(f"\nPhotometry results:")
         for band in bands:
             total = band_results[band]["nu_f_nu_total"]
             print(

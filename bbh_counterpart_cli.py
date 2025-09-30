@@ -12,7 +12,7 @@ Usage:
 
 Commands:
     generate-multiband-lc        Generate multiband lightcurves
-    find-multiband-lc            Find multiband lightcurve (placeholder)
+    find-best-lc                 Find best lightcurve based on BH and SMBH mass
     profile-comparison           Compare different density profiles  
 
 Examples:
@@ -148,10 +148,11 @@ def create_main_parser():
     )
     add_multiband_arguments(generate_multiband_parser)
 
-    find_multiband_parser = subparsers.add_parser(
-        "find-multiband-lc",
-        help="Find multiband lightcurve (placeholder)",
+    find_best_lc_parser = subparsers.add_parser(
+        "find-best-lc",
+        help="Find best lightcurve out of various radial distances and kick velocities based on BH and SMBH mass",
     )
+    add_find_best_lc_arguments(find_best_lc_parser)
 
     # === PROFILE COMPARISON ===
     profile_parser = subparsers.add_parser(
@@ -244,6 +245,113 @@ def add_multiband_arguments(parser):
     )
     parser.add_argument(
         "--save_data", action="store_true", default=True, help="Save data to CSV files"
+    )
+
+
+def add_find_best_lc_arguments(parser):
+    """Add arguments for finding the best multiband lightcurve."""
+
+    # Physical parameters
+    parser.add_argument(
+        "--bh_mass",
+        type=float,
+        default=100.0,
+        help="Embedded BH mass in solar masses (default: 100)",
+    )
+    parser.add_argument(
+        "--vkick",
+        type=float,
+        default=None,
+        help="Kick velocity in km/s",
+    )
+    parser.add_argument(
+        "--radial_distance",
+        type=float,
+        default=None,
+        help="Launch radius in gravitational radii",
+    )
+    parser.add_argument(
+        "--luminosity_distance",
+        type=float,
+        default=300.0,
+        help="Luminosity distance in Mpc (default: 300)",
+    )
+    parser.add_argument(
+        "--smbh_mass",
+        type=float,
+        default=1e8,
+        help="SMBH mass in solar masses (default: 1e8)",
+    )
+
+    # Technical parameters
+    parser.add_argument(
+        "--bands",
+        nargs="+",
+        default=["g", "r", "i", "J"],
+        choices=["u", "g", "r", "i", "z", "J", "H", "K", "B", "V", "R", "I"],
+        help="Photometric bands to analyze",
+    )
+    parser.add_argument(
+        "--t_max",
+        type=float,
+        default=1e6,
+        help="Maximum evolution time in seconds (default: 1e6)",
+    )
+    parser.add_argument(
+        "--time_bins",
+        type=int,
+        default=5000,
+        help="Number of time steps (default: 5000)",
+    )
+
+    # Disk options
+    parser.add_argument(
+        "--use-pagn-default",
+        action="store_true",
+        help="Use PAGN default parameters (Sirko & Goodman 2003)",
+    )
+    parser.add_argument(
+        "--le", type=float, default=None, help="Eddington ratio (if not using defaults)"
+    )
+    parser.add_argument(
+        "--alpha",
+        type=float,
+        default=None,
+        help="Alpha viscosity parameter (if not using defaults)",
+    )
+
+    # Output options
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="./plots",
+        help="Output directory for plots and data (default: ./plots)",
+    )
+    parser.add_argument(
+        "--save_data", action="store_true", default=True, help="Save data to CSV files"
+    )
+
+    parser.add_argument(
+        "--vkick_range",
+        nargs=2,
+        type=float,
+        default=None,
+        metavar=("VKICK_MIN", "VKICK_MAX"),
+        help="Range of vkick values (min max) in km/s",
+    )
+    parser.add_argument(
+        "--radial_distance_range",
+        nargs=2,
+        type=float,
+        default=None,
+        metavar=("RMIN", "RMAX"),
+        help="Range of radial distance values (min max) in r_g",
+    )
+    parser.add_argument(
+        "--n_elements",
+        type=int,
+        default=5,
+        help="Number of elements for vkick/radial_distance arrays",
     )
 
 
@@ -342,10 +450,32 @@ def run_generate_multiband_lc(args):
     return results
 
 
-def run_find_multiband_lc(args):
-    """Placeholder for find-multiband-lc functionality."""
-    # TODO: In find-multiband-lc it should generate multiple lightcurves from various radial distances, then it should compare the lightcurves to the AGN luminosity and should find the best out of them
-    print("find-multiband-lc functionality is not yet implemented.")
+def run_find_best_lc(args):
+    """Find the best lightcurve based on BH and SMBH mass."""
+    from find_best_lc import run_find_best_lc
+
+    # Run the analysis with proper parameters
+    run_find_best_lc(
+        bh_mass=args.bh_mass,
+        vkick=args.vkick,
+        radial_distance=args.radial_distance,
+        luminosity_distance=args.luminosity_distance,
+        smbh_mass=args.smbh_mass,
+        bands=args.bands,
+        t_max=args.t_max,
+        time_bins=args.time_bins,
+        use_pagn_default=args.use_pagn_default,
+        gamma_j=100.0,
+        theta_0=0.17,
+        kappa=0.34,
+        output_dir=args.output_dir,
+        save_data=args.save_data,
+        verbose=True,
+        vkick_range=args.vkick_range,
+        radial_distance_range=args.radial_distance_range,
+        n_elements=args.n_elements,
+    )
+
     return None
 
 
@@ -470,7 +600,7 @@ def main():
     # Route to appropriate command function
     command_functions = {
         "generate-multiband-lc": run_generate_multiband_lc,
-        "find-multiband-lc": run_find_multiband_lc,  # Placeholder
+        "find-best-lc": run_find_best_lc,
         "profile-comparison": run_profile_comparison,
     }
 
