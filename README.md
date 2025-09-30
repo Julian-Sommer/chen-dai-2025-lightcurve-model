@@ -22,19 +22,6 @@ cd chen-dai-2025-lightcurve-model
 pip install numpy scipy matplotlib astropy
 ```
 
-## Quick Start
-
-### Command Line Interface
-
-The package provides a unified CLI for all analysis modes:
-
-```bash
-# Generate multiband lightcurves
-python bbh_counterpart_cli.py generate-multiband-lc \
-    --bh_mass 150 --vkick 100 --radial_distance 1000 \
-    --luminosity_distance 300 --smbh_mass 1e8 --bands g r i
-```
-
 ## Core Commands
 
 ### 1. Multiband Lightcurves (`generate-multiband-lc`)
@@ -86,6 +73,7 @@ python find_best_lc.py \
 This will sweep `vkick` from 50 to 200 and `radial_distance` from 500 to 2000 (default: 5 steps each).
 
 *Single Value Search (only one of `vkick` or `radial_distance` should be a single value; the other must be a range):*
+
 ```bash
 # Example: vkick is a single value, radial_distance is a range
 python find_best_lc.py \
@@ -97,6 +85,7 @@ python find_best_lc.py \
     --bands g r i
 ```
 
+```bash
 # Example: radial_distance is a single value, vkick is a range
 python find_best_lc.py \
     --bh_mass 150 \
@@ -138,6 +127,7 @@ package_github/
 - **CSV files:** Numerical lightcurve data in `data/multiband_lc/` with parameter-specific subdirectories (zero-flux rows filtered out)
 - **PNG plots:** AB magnitude visualizations in parameter-specific subdirectories in `plots/`
 - **Terminal output:** Key parameters and breakout times displayed
+- **Logfile:** When using find-best-lc an output file will be generated
 
 ## Model Parameters
 
@@ -192,12 +182,4 @@ The model supports the following photometric bands:
 ### Performance Tips
 
 - Use `--time_bins 1000` for quick tests
-- Use `--time_bins 5000` for publication-quality results
-- Parameter studies automatically optimize time resolution
-
-### Physics Validation
-
-The code automatically validates physics consistency:
-- Reports Bondi accretion rates
-- Compares override values to calculated values
-- Warns about unphysical parameter combinations
+- Use `--time_bins 5000` for higher quality results
