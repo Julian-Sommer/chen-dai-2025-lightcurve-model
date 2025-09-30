@@ -623,10 +623,34 @@ def run_multiband_analysis(
             data_cols = [times]
 
             for b in bands:
-                header_cols.extend([f"nu_f_nu_total_{b}", f"ab_mag_total_{b}"])
-                data_cols.extend(
-                    [band_results[b]["nu_f_nu_total"], band_results[b]["ab_mag_total"]]
+                # Always present columns
+                header_cols.extend(
+                    [
+                        f"nu_f_nu_total_{b}",
+                        f"ab_mag_total_{b}",
+                    ]
                 )
+                data_cols.extend(
+                    [
+                        band_results[b]["nu_f_nu_total"],
+                        band_results[b]["ab_mag_total"],
+                    ]
+                )
+
+                # Add AGN-only column if present
+                if "ab_mag_agn" in band_results[b]:
+                    header_cols.append(f"ab_mag_agn_{b}")
+                    # ab_mag_agn is a scalar, so broadcast to shape of times
+                    ab_mag_agn_arr = np.full_like(
+                        times, band_results[b]["ab_mag_agn"], dtype=float
+                    )
+                    data_cols.append(ab_mag_agn_arr)
+
+                # Add AGN+transient column if present
+                if "ab_mag_total_agn" in band_results[b]:
+                    header_cols.append(f"ab_mag_total_agn_{b}")
+                    # ab_mag_total_agn is an array (same shape as times)
+                    data_cols.append(band_results[b]["ab_mag_total_agn"])
 
             # Stack all data
             all_data = np.vstack(data_cols).T
