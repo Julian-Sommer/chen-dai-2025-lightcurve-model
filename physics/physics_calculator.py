@@ -336,12 +336,16 @@ class PhysicsCalculator:
         # Calculate expansion timescale
         t_s_init = self.disk_cocoon_emission.expansion_time_scale(r_c_bre, beta_c_bre)
 
-        # Calculate effective diffusion timescale
-        t_c_diff = self.disk_cocoon_emission.effective_diffusion_timescale(
-            t_c_init, t_s_init
-        )
+        # Calculate effective diffusion timescale using paper's exact formula
+        # OLD IMPLEMENTATION (commented out - was too fast by factor ~36):
+        # t_c_diff = self.disk_cocoon_emission.effective_diffusion_timescale_old(
+        #     t_c_init, t_s_init
+        # )
 
-        # For planar timescale, we need to calculate luminosities temporarily
+        # NEW IMPLEMENTATION using paper's exact formula: t_c,diff = sqrt(2/πb) * κM_c / (cH_d)
+        t_c_diff = self.disk_cocoon_emission.effective_diffusion_timescale(
+            kappa, m_c_bre, h
+        )  # For planar timescale, we need to calculate luminosities temporarily
         # Calculate initial internal energy and spherical luminosity
         e_c_init = self.disk_cocoon_emission.cocoon_initial_internal_energy(
             e_c_bre, r_c_bre, h
@@ -667,13 +671,15 @@ class PhysicsCalculator:
 
         # If still no good match, try searching further back in time
         # Sometimes the optimal condition occurs before the search window
-        if best_error > 0.1 and search_start_idx > 50:  # Only if we have room to search back
+        if (
+            best_error > 0.1 and search_start_idx > 50
+        ):  # Only if we have room to search back
             extended_search_start = max(0, search_start_idx - 200)
             for i in range(extended_search_start, search_start_idx):
                 t = times[i]
                 e_c_t = e_c_evolution[i]
                 r_c_t = r_c_evolution[i]
-                
+
                 # Calculate jet-cocoon properties
                 e_cj = self.jet_cocoon_emission.total_jet_cocoon_energy(e_c_t)
                 beta_cr = self.jet_cocoon_emission.critical_velocity(
@@ -683,9 +689,9 @@ class PhysicsCalculator:
                 r_cj = self.jet_cocoon_emission.diffusion_radius(
                     self.params.kappa, e_cj, beta_cjs
                 )
-                
+
                 relative_error = abs(r_cj - r_c_t) / r_c_t
-                
+
                 if relative_error < best_error:
                     best_error = relative_error
                     best_idx = i

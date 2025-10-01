@@ -160,11 +160,12 @@ class DiskCocoonEmission:
         return r_c / (beta_c * C_CGS)
 
     @staticmethod
-    def effective_diffusion_timescale(t_c_init: float, t_s_init: float) -> float:
+    def effective_diffusion_timescale_old(t_c_init: float, t_s_init: float) -> float:
         """
-        Calculate the effective diffusion timescale.
+        OLD IMPLEMENTATION: Calculate the effective diffusion timescale (DEPRECATED).
 
-        This is a simple average of the initial cocoon and shell diffusion timescales.
+        This was the old geometric mean approach that was too fast by factor ~36.
+        Kept for reference only - DO NOT USE.
 
         Parameters
         ----------
@@ -178,7 +179,34 @@ class DiskCocoonEmission:
         float
             Effective diffusion timescale [s]
         """
+        # OLD IMPLEMENTATION (was too fast by factor ~36):
         return np.sqrt(t_c_init * t_s_init)
+
+    @staticmethod
+    def effective_diffusion_timescale(kappa: float, m_c: float, h: float) -> float:
+        """
+        Calculate the effective diffusion timescale using the exact paper formula.
+
+        Formula from paper equation (around line 617): t_c,diff = sqrt(2/πb) * κM_c / (cH_d)
+
+        This is the correct implementation that matches the paper's "effective diffusion timescale"
+        as described in the disk-cocoon emission section.
+
+        Parameters
+        ----------
+        kappa : float
+            Opacity [cm²/g]
+        m_c : float
+            Cocoon mass [g]
+        h : float
+            Disk scale height [cm]
+
+        Returns
+        -------
+        float
+            Effective diffusion timescale [s]
+        """
+        return np.sqrt(2 / (np.pi * b)) * kappa * m_c / (C_CGS * h)
 
     @staticmethod
     def initial_spherical_cocoon_luminosity(e_c_init: float, t_c_init: float) -> float:
