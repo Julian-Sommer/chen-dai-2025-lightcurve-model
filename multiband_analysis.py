@@ -697,15 +697,24 @@ def run_multiband_analysis(
             if verbose:
                 print(f"Plots will be saved to: {plots_dir}")
 
+            # Determine disk type suffix for filenames
+            disk_suffix = "_pagn_disk" if use_pagn_default else "_cd_disk"
+
             # Only generate AB magnitude plots (not nu f_nu plots)
-            mag_path = os.path.join(plots_dir, "multiband_ab_magnitudes.png")
+            mag_path = os.path.join(
+                plots_dir, f"multiband_ab_magnitudes{disk_suffix}.png"
+            )
             mag_linear_path = os.path.join(
-                plots_dir, "multiband_ab_magnitudes_linear_days.png"
+                plots_dir, f"multiband_ab_magnitudes_linear_days{disk_suffix}.png"
+            )
+            mag_with_agn_linear_path = os.path.join(
+                plots_dir,
+                f"multiband_ab_magnitudes_with_agn_linear_days{disk_suffix}.png",
+            )
+            mag_with_agn_log_path = os.path.join(
+                plots_dir, f"multiband_ab_magnitudes_with_agn_log_days{disk_suffix}.png"
             )
 
-            mag_with_agn_linear_path = os.path.join(
-                plots_dir, "multiband_ab_magnitudes_with_agn_linear_days.png"
-            )
             plot_multiband_ab_magnitudes(times, band_results, bands, t_break, mag_path)
             plot_multiband_ab_magnitudes_linear_days(
                 times, band_results, bands, t_break, mag_linear_path
@@ -719,6 +728,18 @@ def run_multiband_analysis(
                 mag_with_agn_linear_path,
                 title=r"Multiband AB Magnitudes (Transient + AGN)",
                 mag_key="ab_mag_total_agn",
+                use_log_scale=False,
+            )
+
+            plot_multiband_ab_magnitudes_with_agn(
+                times,
+                band_results,
+                bands,
+                t_break,
+                mag_with_agn_log_path,
+                title=r"Multiband AB Magnitudes (Transient + AGN)",
+                mag_key="ab_mag_total_agn",
+                use_log_scale=True,
             )
 
             if verbose:
@@ -726,11 +747,13 @@ def run_multiband_analysis(
                 print(f"  {mag_path}")
                 print(f"  {mag_linear_path}")
                 print(f"  {mag_with_agn_linear_path}")
+                print(f"  {mag_with_agn_log_path}")
 
             results.output_paths["plots"] = [
                 mag_path,
                 mag_linear_path,
                 mag_with_agn_linear_path,
+                mag_with_agn_log_path,
             ]
 
     if verbose:

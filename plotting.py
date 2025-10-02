@@ -285,6 +285,7 @@ def plot_multiband_ab_magnitudes_with_agn(
     show_legend=True,
     xlim_days=None,
     ylim=None,
+    use_log_scale=False,
 ):
     """
     Plot multiband AB magnitude lightcurves for the sum of transient and AGN disk.
@@ -321,6 +322,8 @@ def plot_multiband_ab_magnitudes_with_agn(
         (xmin, xmax) in days for x-axis
     ylim : tuple or None
         (ymin, ymax) for y-axis
+    use_log_scale : bool
+        Whether to use logarithmic x-axis (default: False for linear scale)
 
     Returns
     -------
@@ -355,28 +358,41 @@ def plot_multiband_ab_magnitudes_with_agn(
         mags = band_results[band][mag_key]
         ax.plot(times_days, mags, label=f"{band}", color=color, linewidth=2.0)
 
-    ax.set_xlabel("Time [days]", fontsize=14)
+    # Set x-axis scale based on use_log_scale parameter
+    if use_log_scale:
+        ax.set_xscale("log")
+        ax.set_xlabel("Time [days]", fontsize=14)
+    else:
+        ax.set_xlabel("Time [days]", fontsize=14)
+
     ax.set_ylabel("AB magnitude", fontsize=14)
     ax.invert_yaxis()
 
-    # Sensible x-lim: find the earliest time after the minimum where n consecutive identical magnitudes occur in any band
-    n_identical = 3
-    min_x_limit = times_days[-1]
-    for band in bands:
-        mags = band_results[band][mag_key]
-        # Find the index of the minimum magnitude
-        min_index = np.argmin(mags)
-        # Check for n consecutive identical values after the minimum
-        for i in range(min_index + 1, len(mags) - n_identical + 1):
-            if np.all(mags[i : i + n_identical] == mags[i]):
-                min_x_limit = min(min_x_limit, times_days[i] + 1)  # +1 day buffer
-                break
-
-    # Set xlim: use user-provided xlim_days if given, else use the computed min_x_limit
-    if xlim_days is not None:
-        ax.set_xlim(*xlim_days)
+    # Handle x-limits based on scale type
+    if use_log_scale:
+        # For log scale, use time range similar to other log plots
+        if xlim_days is not None:
+            ax.set_xlim(*xlim_days)
+        # Don't auto-compute xlim for log scale as it can be tricky
     else:
-        ax.set_xlim(left=times_days[0], right=min_x_limit)
+        # Sensible x-lim for linear scale: find the earliest time after the minimum where n consecutive identical magnitudes occur in any band
+        n_identical = 3
+        min_x_limit = times_days[-1]
+        for band in bands:
+            mags = band_results[band][mag_key]
+            # Find the index of the minimum magnitude
+            min_index = np.argmin(mags)
+            # Check for n consecutive identical values after the minimum
+            for i in range(min_index + 1, len(mags) - n_identical + 1):
+                if np.all(mags[i : i + n_identical] == mags[i]):
+                    min_x_limit = min(min_x_limit, times_days[i] + 1)  # +1 day buffer
+                    break
+
+        # Set xlim: use user-provided xlim_days if given, else use the computed min_x_limit
+        if xlim_days is not None:
+            ax.set_xlim(*xlim_days)
+        else:
+            ax.set_xlim(left=times_days[0], right=min_x_limit)
     if ylim is not None:
         ax.set_ylim(*ylim)
 
@@ -389,7 +405,10 @@ def plot_multiband_ab_magnitudes_with_agn(
     plt.savefig(save_path, dpi=dpi, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
-    print(f"Multiband AB magnitudes with AGN component plot saved to {save_path}")
+    scale_type = "logarithmic" if use_log_scale else "linear"
+    print(
+        f"Multiband AB magnitudes with AGN component ({scale_type} scale) plot saved to {save_path}"
+    )
     return save_path
 
 
