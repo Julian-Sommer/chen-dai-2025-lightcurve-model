@@ -62,7 +62,7 @@ Automate parameter grid searches and identify the best lightcurve (the parameter
 
 *Grid Search with Ranges (limits):*
 ```bash
-python find_best_lc.py \
+python bbh_counterpart_cli.py find-best-lc \
     --bh_mass 150 \
     --vkick_range 50 200 \
     --radial_distance_range 500 2000 \
@@ -80,7 +80,7 @@ This will sweep `vkick` from 50 to 200 and `radial_distance` from 500 to 2000, u
 ```bash
 
 # Example: vkick is a single value, radial_distance is a range
-python find_best_lc.py \
+python bbh_counterpart_cli.py find-best-lc \
     --bh_mass 150 \
     --vkick 100 \
     --radial_distance_range 500 2000 \
@@ -92,7 +92,7 @@ python find_best_lc.py \
     --time_bins 5000
 
 # Example: radial_distance is a single value, vkick is a range
-python find_best_lc.py \
+python bbh_counterpart_cli.py find-best-lc \
     --bh_mass 150 \
     --vkick_range 50 200 \
     --radial_distance 1000 \
