@@ -19,7 +19,7 @@ git clone https://github.com/Juli-Sommer/chen-dai-2025-lightcurve-model.git
 cd chen-dai-2025-lightcurve-model
 
 # Install dependencies (requires Python 3.8+)
-pip install pagn numpy scipy matplotlib astropy
+pip install pagn numpy scipy matplotlib astropy tqdm
 ```
 
 ## Core Commands
@@ -30,15 +30,15 @@ Generate complete multiband lightcurves with all emission components:
 
 ```bash
 python bbh_counterpart_cli.py generate-multiband-lc \
-    --bh_mass 150 \              # Embedded BH mass [M_sun]
-    --vkick 100 \                # Kick velocity [km/s]
-    --radial_distance 1000 \     # Distance from SMBH [r_g]
-    --luminosity_distance 300 \  # Observer distance [Mpc]
-    --smbh_mass 1e8 \           # SMBH mass [M_sun]
-    --bands g r i J \           # Photometric bands
-    --t_max 1e6 \               # Maximum evolution time [s]
-    --time_bins 5000 \          # Time resolution
-    --use-pagn-default          # Optional: use PAGN disk parameters
+    --bh_mass 150 \
+    --vkick 100 \
+    --radial_distance 1000 \
+    --luminosity_distance 300 \
+    --smbh_mass 1e8 \
+    --bands g r i J \
+    --t_max 1e6 \
+    --time_bins 5000 \
+    --use-pagn-default
 ```
 
 **Outputs:**
@@ -103,20 +103,20 @@ python bbh_counterpart_cli.py find-best-lc \
     --t_max 1e7 \
     --time_bins 5000
 ```
-## Physical Parameter Insights
-
-- **vkick:** The lowest `vkick` value always returns the strongest signature in the lightcurve, because the jet luminosity $L_j$ directly scales with the Bondi accretion rate, which increases as `vkick` decreases.
-- **SMBH mass:** The smaller the SMBH mass, the stronger the transient–AGN contrast. However, this also results in a lower overall magnitude in redder bands and causes shorter transient emission durations.
-
 > **Note:** A single value search only makes sense if *either* `vkick` *or* `radial_distance` is a single value, not both. If both are single values, only one model will be run and the grid search logic is not used.
 This will run a single model for the specified parameters.
 
 
-**Output:**
+**Outputs:**
 - Prints the top 3 parameter combinations with the strongest transient–AGN contrast in the bluest band.
 - For each, prints the CSV file path and associated plot paths.
 - All output files are organized in parameter-specific subdirectories under `data/multiband_lc/` and `plots/`.
 - A log file `find_best_lc.log` is generated, containing verbose output from each simulation. If you want to check detailed progress or debug issues, refer to this log file.
+
+## Physical Parameter Insights
+
+- **vkick:** The lowest `vkick` value always returns the strongest signature in the lightcurve, because the jet luminosity $L_j$ directly scales with the Bondi accretion rate, which increases as `vkick` decreases.
+- **SMBH mass:** The smaller the SMBH mass, the stronger the transient–AGN contrast. However, this also results in a lower overall magnitude in redder bands and causes shorter transient emission durations.
 
 ## Data Storage Structure
 

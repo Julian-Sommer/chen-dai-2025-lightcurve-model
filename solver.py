@@ -6,7 +6,7 @@ velocity parameter beta_h following the Chen & Dai 2025 approach.
 """
 
 import numpy as np
-from typing import Optional, Callable
+from typing import Optional
 from scipy.optimize import brentq, fsolve
 
 try:
@@ -223,52 +223,6 @@ class BetaHSolver:
         """
         return max(0.001, min(0.5, initial_guess * 0.5))
 
-    def set_solver_options(
-        self,
-        tolerance: float = 1e-10,
-        max_iterations: int = 100,
-        bounds: tuple = (1e-6, 0.99),
-    ) -> None:
-        """
-        Set solver options.
-
-        Parameters
-        ----------
-        tolerance : float
-            Convergence tolerance
-        max_iterations : int
-            Maximum number of iterations
-        bounds : tuple
-            (lower_bound, upper_bound) for beta_h
-        """
-        self.tolerance = tolerance
-        self.max_iterations = max_iterations
-        self.bounds = bounds
-
-    def get_equation_residual(
-        self, beta_h: float, t: float, rho_0: float, h: float
-    ) -> float:
-        """
-        Get equation residual for diagnostics.
-
-        Parameters
-        ----------
-        beta_h : float
-            Beta_h value
-        t : float
-            Time [s]
-        rho_0 : float
-            Central disk density [g/cm³]
-        h : float
-            Disk scale height [cm]
-
-        Returns
-        -------
-        float
-            Equation residual
-        """
-        return self.beta_h_equation(beta_h, t, rho_0, h)
-
     def solve_single_constrained(
         self,
         t: float,
@@ -374,60 +328,3 @@ class BetaHSolver:
                     return min(conservative_solution, 0.99)
 
             return unconstrained_solution
-
-
-# ============================================================================
-# CONVENIENCE FUNCTIONS
-# ============================================================================
-
-
-def create_solver(params: ModelParameters, l_j: float) -> BetaHSolver:
-    """
-    Create BetaHSolver with given parameters.
-
-    Parameters
-    ----------
-    params : ModelParameters
-        Model parameters
-    l_j : float
-        Jet luminosity [erg/s]
-
-    Returns
-    -------
-    BetaHSolver
-        Configured solver
-    """
-    return BetaHSolver(params, l_j)
-
-
-def solve_beta_h_simple(
-    beta_j: float, l_j: float, t: float, rho_0: float, h: float, theta_0: float
-) -> float:
-    """
-    Simple function to solve for beta_h with minimal setup.
-
-    Parameters
-    ----------
-    beta_j : float
-        Initial jet velocity parameter
-    l_j : float
-        Jet luminosity [erg/s]
-    t : float
-        Time [s]
-    rho_0 : float
-        Central disk density [g/cm³]
-    h : float
-        Disk scale height [cm]
-    theta_0 : float
-        Initial jet opening angle [rad]
-
-    Returns
-    -------
-    float
-        Solved beta_h value
-    """
-    params = ModelParameters(theta_0=theta_0)
-    params.beta_j = beta_j  # Override with custom value
-
-    solver = BetaHSolver(params, l_j)
-    return solver.solve_single(t, rho_0, h)

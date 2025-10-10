@@ -29,22 +29,6 @@ def frequency_from_wavelength_angstrom(wavelength_ang: float) -> float:
     return C_CGS / wavelength_cm
 
 
-def luminosity_nu_to_flux_density(l_nu: float, distance_mpc: float) -> float:
-    """Convert monochromatic luminosity L_nu [erg/s/Hz] to flux density F_nu [erg/s/cm^2/Hz]."""
-    d_cm = distance_mpc * 3.086e24
-    return l_nu / (4 * np.pi * d_cm**2)
-
-
-def ab_mag_from_flux_density(f_nu: float) -> float:
-    if f_nu <= 0:
-        return np.inf
-    return -2.5 * np.log10(f_nu) - 48.6
-
-
-def ab_magnitude_from_lnu(l_nu: float, distance_mpc: float) -> float:
-    return ab_mag_from_flux_density(luminosity_nu_to_flux_density(l_nu, distance_mpc))
-
-
 def planck_lnu(temperature: float, radius: float, frequency: float) -> float:
     """Approximate spectral luminosity L_nu for a blackbody sphere.
 
@@ -64,36 +48,3 @@ def planck_lnu(temperature: float, radius: float, frequency: float) -> float:
     if denom <= 0:
         return 0.0
     return pre / denom
-
-
-def build_simple_blackbody_lnu_series(
-    times: np.ndarray, temps: np.ndarray, radii: np.ndarray, band: str
-) -> np.ndarray:
-    """Generate L_nu time series for a band using blackbody approximation.
-
-    Parameters
-    ----------
-    times : array
-        Time array (unused except for shape).
-    temps : array
-        Temperature evolution [K].
-    radii : array
-        Effective emission radius evolution [cm].
-    band : str
-        Photometric band key (g,r,i,z,J).
-    """
-    nu = frequency_from_wavelength_angstrom(wavelength_from_band(band))
-    lnu = np.array([planck_lnu(T, R, nu) for T, R in zip(temps, radii)])
-    return lnu
-
-
-def multi_band_ab_magnitudes(
-    l_nu_map: Dict[str, np.ndarray], distance_mpc: float
-) -> Dict[str, np.ndarray]:
-    out = {}
-    for band, lnu_series in l_nu_map.items():
-        fnu = luminosity_nu_to_flux_density(lnu_series, distance_mpc)
-        with np.errstate(divide="ignore"):
-            mags = -2.5 * np.log10(np.where(fnu > 0, fnu, np.nan)) - 48.6
-        out[band] = mags
-    return out

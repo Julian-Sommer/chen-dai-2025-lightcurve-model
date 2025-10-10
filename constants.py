@@ -241,35 +241,3 @@ class ModelParameters:
 
 # Default parameters for Chen & Dai 2025
 DEFAULT_PARAMS = ModelParameters()
-
-# ============================================================================
-# UTILITY FUNCTIONS
-# ============================================================================
-
-
-def validate_parameters(params: ModelParameters) -> None:
-    """
-    Validate that model parameters are physically reasonable.
-
-    Parameters
-    ----------
-    params : ModelParameters
-        Parameters to validate
-
-    Raises
-    ------
-    ValueError
-        If parameters are outside acceptable ranges
-    """
-    if params.mass_smbh <= 0:
-        raise ValueError("SMBH mass must be positive")
-    if params.gamma_j <= 1:
-        raise ValueError("Jet Lorentz factor must be > 1")
-    if not 0 < params.theta_0 < np.pi / 2:
-        raise ValueError("Jet opening angle must be between 0 and π/2")
-    if params.kappa <= 0:
-        raise ValueError("Opacity must be positive")
-    if not 0 < params.eddington_ratio <= 1:
-        raise ValueError("Eddington ratio must be between 0 and 1")
-    if params.alpha_viscosity <= 0:
-        raise ValueError("Viscosity parameter must be positive")
