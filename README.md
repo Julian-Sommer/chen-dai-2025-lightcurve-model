@@ -195,3 +195,20 @@ The model supports the following photometric bands:
 
 - Use `--time_bins 1000` for quick tests
 - Use `--time_bins 5000` for higher quality results
+
+## Acknowledgements & Development Notes
+
+This package provides a numerical implementation of the light curve model presented in **Chen & Dai (2025)**.  
+The goal of this work is to make the equations and methods from that paper easily accessible for numerical studies and model comparison.  
+The implementation follows the original formulation as closely as possible, with minor extensions introduced by the author to improve applicability and flexibility.
+
+During development, **GitHub Copilot** was used as an auxiliary tool to assist with code structuring, modularization, and to explore possible numerical solver approaches.  
+All Copilot-generated suggestions were reviewed by the author, and the final implementation reflects the author's scientific and technical judgment.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Citation
+
+If you use this software in your research, please cite both the software and the underlying paper (Chen & Dai 2025). See [CITATION.cff](CITATION.cff) for citation details, or use the "Cite this repository" button on GitHub.

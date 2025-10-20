@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the underlying paper."
+type: software
+title: "Electromagnetic Counterpart Lightcurve Toolkit for AGN-Embedded BBH Mergers"
+abstract: "Simulates electromagnetic emission from binary black hole mergers embedded in active galactic nucleus (AGN) disks. Evolves jet–cocoon systems, estimates jet power, and computes multiband lightcurves across optical and near-infrared bands."
+authors:
+  - family-names: Sommer
+    given-names: Julian
+    orcid: "https://orcid.org/0000-0002-1154-8317"
+repository-code: "https://github.com/Juli-Sommer/chen-dai-2025-lightcurve-model"
+license: MIT
+keywords:
+  - astrophysics
+  - black holes
+  - AGN
+  - lightcurves
+  - jets
+  - gravitational waves
+version: 1.0.0
+date-released: 2025-10-20
+
+references:
+  - type: article
+    title: "Observational Properties of Thermal Emission from Relativistic Jets Embedded in Active Galactic Nucleus Disks"
+    authors:
+      - family-names: Chen
+        given-names: Zhen-Feng
+      - family-names: Dai
+        given-names: Zi-Gao
+    journal: "The Astrophysical Journal"
+    year: 2025
+    volume: 987
+    pages: 214
+    doi: "10.3847/1538-4357/addb48"
+    url: "https://ui.adsabs.harvard.edu/abs/2025ApJ...987..214C"
