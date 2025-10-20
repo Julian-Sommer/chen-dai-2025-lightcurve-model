@@ -202,8 +202,8 @@ This package provides a numerical implementation of the light curve model presen
 The goal of this work is to make the equations and methods from that paper easily accessible for numerical studies and model comparison.  
 The implementation follows the original formulation as closely as possible, with minor extensions introduced by the author to improve applicability and flexibility.
 
-During development, **GitHub Copilot** was used as an auxiliary tool to assist with code structuring, modularization, and to explore possible numerical solver approaches.  
-All Copilot-generated suggestions were reviewed by the author, and the final implementation reflects the author's scientific and technical judgment.
+During development, **GitHub Copilot** was used as an auxiliary tool to assist with code development and documentation.  
+All suggestions were reviewed by the author, and the final implementation reflects the author's scientific and technical judgment.
 
 ## License
 
