@@ -42,9 +42,14 @@ python bbh_counterpart_cli.py generate-multiband-lc \
 ```
 
 **Outputs:**
-- `multiband_ab_magnitudes.png` - AB magnitude lightcurves
-- `multiband_ab_magnitudes_linear_days.png` - AB magnitudes (linear time scale)
+- `multiband_ab_magnitudes_{disk}_{tdiff}.png` - AB magnitude lightcurves (log scale)
+- `multiband_ab_magnitudes_linear_days_{disk}_{tdiff}.png` - AB magnitudes (linear time scale)
+- `multiband_ab_magnitudes_with_agn_linear_days_{disk}_{tdiff}.png` - Transient + AGN (linear scale)
+- `multiband_ab_magnitudes_with_agn_log_days_{disk}_{tdiff}.png` - Transient + AGN (log scale)
 - `multiband_lc_t{time_bins}_b{bands}.csv` - Numerical results (filtered, non-zero only)
+
+Where `{disk}` is either `cd_disk` (Chen & Dai) or `pagn_disk` (PAGN defaults), and `{tdiff}` is either `paper_tdiff` (default) or `chat_tdiff` (Chatzopoulos formula).
+
 
 ### 2. Best Lightcurve Selection (`find-best-lc`)
 
@@ -128,8 +133,10 @@ package_github/
 │           └── multiband_lc_t5000_bg_r_i.csv
 ├── plots/                          # Output plots (organized by parameters)
 │   └── bh150_v100_r1000_d300_smbh1e8/
-│       ├── multiband_ab_magnitudes.png
-│       └── multiband_ab_magnitudes_linear_days.png
+│       ├── multiband_ab_magnitudes_cd_disk_paper.png
+│       ├── multiband_ab_magnitudes_linear_days_cd_disk_paper.png
+│       ├── multiband_ab_magnitudes_with_agn_linear_days_cd_disk_paper.png
+│       └── multiband_ab_magnitudes_with_agn_log_days_cd_disk_paper.png
 ├── agn_disks/                      # AGN disk models
 └── physics/                        # Physics modules
 ```
@@ -181,6 +188,15 @@ The model supports the following photometric bands:
 --bands g r i            # Optical only
 --bands J H K            # Near-infrared only
 ```
+
+### Diffusion Timescale Options
+
+The disk cocoon diffusion timescale can be calculated using two different formulas:
+
+- **Default (Chen & Dai 2025):** Uses the paper's approximation from Equation 26
+- **Chatzopoulos et al. (2012):** Uses `√(t_c,0 × t_s,0)` formula with `--use-chatzopoulos-tdiff`
+
+Note: The paper's approximation has been found to differ from the Chatzopoulos formula. The default preserves the paper's original implementation.
 
 ## Troubleshooting
 

@@ -342,10 +342,21 @@ class PhysicsCalculator:
         #     t_c_init, t_s_init
         # )
 
-        # NEW IMPLEMENTATION using paper's exact formula: t_c,diff = sqrt(2/πb) * κM_c / (cH_d)
-        t_c_diff = self.disk_cocoon_emission.effective_diffusion_timescale(
-            kappa, m_c_bre, h
-        )  # For planar timescale, we need to calculate luminosities temporarily
+        # # NEW IMPLEMENTATION using paper's exact formula: t_c,diff = sqrt(2/πb) * κM_c / (cH_d)
+        # t_c_diff = self.disk_cocoon_emission.effective_diffusion_timescale(
+        #     kappa, m_c_bre, h
+        # )  # For planar timescale, we need to calculate luminosities temporarily
+
+        # Calculate effective diffusion timescale with regime selection
+        if self.params.use_chatzopoulos_tdiff:
+            t_c_diff = self.disk_cocoon_emission.effective_diffusion_timescale_chatzopoulos(
+                t_c_init, t_s_init
+            )
+        else:
+            t_c_diff = self.disk_cocoon_emission.effective_diffusion_timescale(
+                kappa, m_c_bre, h
+            )
+
         # Calculate initial internal energy and spherical luminosity
         e_c_init = self.disk_cocoon_emission.cocoon_initial_internal_energy(
             e_c_bre, r_c_bre, h

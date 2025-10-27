@@ -246,6 +246,14 @@ def add_multiband_arguments(parser):
         "--save_data", action="store_true", default=True, help="Save data to CSV files"
     )
 
+    # Diffusion timescale options
+    parser.add_argument(
+        "--use_chatzopoulos_tdiff",
+        action="store_true",
+        help="Use Chatzopoulos et al. (2012) diffusion timescale formula (sqrt(t_c,0 * t_s,0)) "
+             "instead of Chen & Dai (2025) approximation (default: False, uses paper's formula)",
+    )
+
 
 def add_find_best_lc_arguments(parser):
     """Add arguments for finding the best multiband lightcurve."""
@@ -353,6 +361,14 @@ def add_find_best_lc_arguments(parser):
         help="Number of elements for vkick/radial_distance arrays",
     )
 
+    # Diffusion timescale options
+    parser.add_argument(
+        "--use_chatzopoulos_tdiff",
+        action="store_true",
+        help="Use Chatzopoulos et al. (2012) diffusion timescale formula (sqrt(t_c,0 * t_s,0)) "
+             "instead of Chen & Dai (2025) approximation (default: False, uses paper's formula)",
+    )
+
 
 def add_profile_comparison_arguments(parser):
     """Add arguments for profile comparison."""
@@ -442,6 +458,7 @@ def run_generate_multiband_lc(args):
         kappa=0.34,
         output_dir=args.output_dir,
         save_data=args.save_data,
+        use_chatzopoulos_tdiff=args.use_chatzopoulos_tdiff,
         verbose=True,
     )
 
@@ -469,10 +486,11 @@ def run_find_best_lc(args):
         kappa=0.34,
         output_dir=args.output_dir,
         save_data=args.save_data,
-        verbose=True,
         vkick_range=args.vkick_range,
         radial_distance_range=args.radial_distance_range,
         n_elements=args.n_elements,
+        use_chatzopoulos_tdiff=args.use_chatzopoulos_tdiff,
+        verbose=True,
     )
 
     return None

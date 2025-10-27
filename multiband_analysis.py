@@ -61,6 +61,7 @@ def run_multiband_analysis(
     kappa=0.34,
     output_dir="./plots",
     save_data=True,
+    use_chatzopoulos_tdiff=False,
     verbose=True,
 ):
     """
@@ -121,6 +122,7 @@ def run_multiband_analysis(
         gamma_j=gamma_j,
         theta_0=theta_0,
         kappa=kappa,
+        use_chatzopoulos_tdiff=use_chatzopoulos_tdiff,
     )
 
     # Get configuration info for user feedback
@@ -699,20 +701,23 @@ def run_multiband_analysis(
 
             # Determine disk type suffix for filenames
             disk_suffix = "_pagn_disk" if use_pagn_default else "_cd_disk"
+            
+            # Add timescale method suffix
+            tdiff_suffix = "_chat_tdiff" if use_chatzopoulos_tdiff else "_paper_tdiff"
 
             # Only generate AB magnitude plots (not nu f_nu plots)
             mag_path = os.path.join(
-                plots_dir, f"multiband_ab_magnitudes{disk_suffix}.png"
+                plots_dir, f"multiband_ab_magnitudes{disk_suffix}{tdiff_suffix}.png"
             )
             mag_linear_path = os.path.join(
-                plots_dir, f"multiband_ab_magnitudes_linear_days{disk_suffix}.png"
+                plots_dir, f"multiband_ab_magnitudes_linear_days{disk_suffix}{tdiff_suffix}.png"
             )
             mag_with_agn_linear_path = os.path.join(
                 plots_dir,
-                f"multiband_ab_magnitudes_with_agn_linear_days{disk_suffix}.png",
+                f"multiband_ab_magnitudes_with_agn_linear_days{disk_suffix}{tdiff_suffix}.png",
             )
             mag_with_agn_log_path = os.path.join(
-                plots_dir, f"multiband_ab_magnitudes_with_agn_log_days{disk_suffix}.png"
+                plots_dir, f"multiband_ab_magnitudes_with_agn_log_days{disk_suffix}{tdiff_suffix}.png"
             )
 
             plot_multiband_ab_magnitudes(times, band_results, bands, t_break, mag_path)

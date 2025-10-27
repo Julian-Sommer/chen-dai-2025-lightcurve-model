@@ -149,6 +149,7 @@ class ModelParameters:
         kappa: float = 0.34,
         eddington_ratio: float = 0.1,
         alpha_viscosity: float = 0.1,
+        use_chatzopoulos_tdiff: bool = False,
     ):
         """
         Initialize model parameters.
@@ -174,6 +175,7 @@ class ModelParameters:
         self.kappa = kappa
         self.eddington_ratio = eddington_ratio
         self.alpha_viscosity = alpha_viscosity
+        self.use_chatzopoulos_tdiff = use_chatzopoulos_tdiff
 
         # Derived parameters
         self.beta_j = np.sqrt(1 - 1 / gamma_j**2)
@@ -195,6 +197,7 @@ class ModelParameters:
         gamma_j: float = 100.0,
         theta_0: float = 0.17,
         kappa: float = 0.34,
+        use_chatzopoulos_tdiff: bool = False,
     ):
         """Create ModelParameters using disk configuration.
 
@@ -224,6 +227,7 @@ class ModelParameters:
             kappa=kappa,
             eddington_ratio=config["eddington_ratio"],
             alpha_viscosity=config["alpha_viscosity"],
+            use_chatzopoulos_tdiff=use_chatzopoulos_tdiff,
         )
 
     def get_disk_filename(self) -> str:

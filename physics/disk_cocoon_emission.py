@@ -160,7 +160,7 @@ class DiskCocoonEmission:
         return r_c / (beta_c * C_CGS)
 
     @staticmethod
-    def effective_diffusion_timescale_old(t_c_init: float, t_s_init: float) -> float:
+    def effective_diffusion_timescale_chatzopoulos(t_c_init: float, t_s_init: float) -> float:
         """
         OLD IMPLEMENTATION: Calculate the effective diffusion timescale (DEPRECATED).
 
